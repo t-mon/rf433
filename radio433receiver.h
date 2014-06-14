@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <QSocketNotifier>
 
 class Radio433Receiver : public QThread
 {
@@ -20,13 +21,23 @@ public:
     explicit Radio433Receiver(QObject *parent = 0, int gpio = 0);
     ~Radio433Receiver();
 
+    enum Protocol{
+        Protocol48,
+        Protocol64,
+        ProtocolNone
+    };
+
     void run() override;
     void stop();
 
 private:
     int m_gpio;
     unsigned int m_epochMicro;
-    unsigned long m_lastTime;
+
+    unsigned int m_pulseProtocolOne;
+    unsigned int m_pulseProtocolTwo;
+
+    QSocketNotifier *m_notifier;
 
     QList<uint> m_timings;
 
@@ -38,10 +49,13 @@ private:
     bool valueInTolerance(int value, int sollValue);
     bool valueIsValid(int value);
 
+    bool checkValues(Protocol protocol);
+
 private slots:
-    void handleInterrupt();
+    void handleTiming(int duration);
 
 signals:
+    void timingReady(int duration);
     void dataReceived(QList<uint> rawData);
 
 public slots:
