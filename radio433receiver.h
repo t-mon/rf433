@@ -12,13 +12,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
-#include <QSocketNotifier>
+
+#include "gpio.h"
 
 class Radio433Receiver : public QThread
 {
     Q_OBJECT
 public:
-    explicit Radio433Receiver(QObject *parent = 0, int gpio = 0);
+    explicit Radio433Receiver(QObject *parent = 0, int gpio = 27);
     ~Radio433Receiver();
 
     enum Protocol{
@@ -27,36 +28,38 @@ public:
         ProtocolNone
     };
 
-    void run() override;
-    void stop();
+    void startReceiver();
+    void stopReceiver();
 
 private:
-    int m_gpio;
+    int m_gpioPin;
+    Gpio *m_gpio;
     unsigned int m_epochMicro;
 
     unsigned int m_pulseProtocolOne;
     unsigned int m_pulseProtocolTwo;
 
-    QSocketNotifier *m_notifier;
-
-    QList<uint> m_timings;
+    QList<int> m_timings;
 
     QMutex m_mutex;
     bool m_enabled;
+    bool m_reading;
 
+    void run();
     bool setUpGpio();
     int micros();
     bool valueInTolerance(int value, int sollValue);
-    bool valueIsValid(int value);
-
+    bool checkValue(int value);
     bool checkValues(Protocol protocol);
+    void changeReading(bool reading);
 
 private slots:
     void handleTiming(int duration);
 
 signals:
     void timingReady(int duration);
-    void dataReceived(QList<uint> rawData);
+    void dataReceived(QList<int> rawData);
+    void readingChanged(const bool &reading);
 
 public slots:
 

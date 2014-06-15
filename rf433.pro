@@ -20,8 +20,14 @@ INSTALLS += target
 
 SOURCES += main.cpp \
     radio433receiver.cpp \
-    core.cpp
+    core.cpp \
+    radio433trasmitter.cpp \
+    gpio.cpp \
+    radio433.cpp
 
 HEADERS += \
     radio433receiver.h \
-    core.h
+    core.h \
+    radio433trasmitter.h \
+    gpio.h \
+    radio433.h

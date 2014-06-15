@@ -2,7 +2,8 @@
 #define CORE_H
 
 #include <QObject>
-#include <radio433receiver.h>
+
+#include <radio433.h>
 
 class Core : public QObject
 {
@@ -11,7 +12,7 @@ public:
     explicit Core(QObject *parent = 0);
     ~Core();
 
-    Radio433Receiver *m_receiver;
+    Radio433 *m_radio433;
 
 signals:
 

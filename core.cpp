@@ -3,12 +3,10 @@
 Core::Core(QObject *parent) :
     QObject(parent)
 {
-    m_receiver = new Radio433Receiver(this,27);
-    m_receiver->run();
+    m_radio433 = new Radio433(this);
 }
 
 Core::~Core()
 {
-    m_receiver->quit();
-    m_receiver->deleteLater();
+
 }
